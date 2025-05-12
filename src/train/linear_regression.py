@@ -9,8 +9,8 @@ def gradient_descent(
 		input_feature: np.ndarray, 
 		teta0: float,
 		teta1: float,
-		learning_rate: float = 0.01,
-		iterations: int = 5
+		learning_rate: float = 0.001,
+		iterations: int = 1000
 	) -> Tuple[float, float]:
 	"""Perform gradient descent to find the optimal parameters."""
 
@@ -43,10 +43,24 @@ def normalize_data(raw_data: np.ndarray) -> np.ndarray:
     """Normalize the data"""
 
     mean = raw_data.mean()
-    std_dev = raw_data.std_dev()
-
+    std_dev = raw_data.std()
     normalized_data = (raw_data - mean) / std_dev
     return normalized_data
+
+
+def reverse_normalize_tetas(
+		teta0_norm: float,
+		teta1_norm: float,
+		mean_input: float,
+		std_dev_input: float,
+		mean_output: float,
+		std_dev_output: float
+	) -> Tuple[float, float]:
+	"""Reverse normalize the teta values"""
+
+	teta0 = (teta0_norm - teta1_norm * mean_input / std_dev_input) * std_dev_output + mean_output
+	teta1 = teta1_norm * std_dev_output / std_dev_input
+	return teta0, teta1
 
 
 def apply_linear_regression(df: pd.DataFrame) -> Tuple[float, float]:
@@ -64,20 +78,38 @@ def apply_linear_regression(df: pd.DataFrame) -> Tuple[float, float]:
 	dataset_output = df["price"].values
 	input_feature = df["km"].values
 
-    print("before normalization")
-    print(input_feature)
-    print(dataset_output)
+	print("before normalization")
+	print(input_feature)
+	print(dataset_output)
 
-    normalized_dataset_output = normalize_data(dataset_output)
-    normalized_input_feature = normalize_data(input_feature)
+	normalized_dataset_output = normalize_data(dataset_output)
+	normalized_input_feature = normalize_data(input_feature)
 
-    print(normalized_input_feature)
-    print(normalized_dataset_output)
-	# plot_regression_line(input_feature, dataset_output, 0.0, 0.0)
+	print("after normalization")
 
-	teta0 = 0.0
-	teta1 = 0.0
+	print(normalized_input_feature)
+	print(normalized_dataset_output)
+	print()
 
-	teta0, teta1 = gradient_descent(dataset_output, input_feature, teta0, teta1)
+	teta0_norm = 0.0
+	teta1_norm = 0.0
+
+	teta0_norm, teta1_norm = gradient_descent(
+		normalized_dataset_output,
+		normalized_input_feature,
+		teta0_norm,
+		teta1_norm
+	)
+
+	mean_out = dataset_output.mean()
+	std_dev_out = dataset_output.std()
+	mean_in = input_feature.mean()
+	std_dev_in = input_feature.std()
+
+	teta0, teta1 = reverse_normalize_tetas(teta0_norm, teta1_norm, mean_in, std_dev_in, mean_out, std_dev_out)
+	print("after reverse normalization")
+	print(f"Final teta0: {teta0}, teta1: {teta1}")
+
+	plot_regression_line(input_feature, dataset_output, teta0, teta1)
 
 	return teta0, teta1
