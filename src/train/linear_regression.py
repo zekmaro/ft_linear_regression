@@ -1,7 +1,7 @@
 from typing import Tuple
 import pandas as pd
 import numpy as np
-from visualization import plot_regression_line
+from visualization import plot_regression_line, plot_error_history
 
 
 def gradient_descent(
@@ -9,19 +9,32 @@ def gradient_descent(
 		input_feature: np.ndarray, 
 		teta0: float,
 		teta1: float,
-		learning_rate: float = 0.001,
-		iterations: int = 1000
+		learning_rate: float = 0.01,
+		iterations: int = 1000,
+		epsilon: float = 1e-6
 	) -> Tuple[float, float]:
 	"""Perform gradient descent to find the optimal parameters."""
+
+	prev_mse = float('inf')
 
 	print(input_feature)
 	print(dataset_output)
 	print()
+
+	error_history = []
 	for _ in range(iterations):
 		predictions = teta0 + teta1 * input_feature
 		print(f"Predictions: {predictions}")
 		print()
+
 		error = dataset_output - predictions
+		mse = np.mean(error ** 2)  # ← Mean Squared Error
+		error_history.append(mse)
+
+		if abs(prev_mse - mse) < epsilon:
+			break
+		prev_mse = mse
+
 		print(f"Error: {error}")
 		print()
 
@@ -36,6 +49,7 @@ def gradient_descent(
 		print(f"teta0: {teta0}, teta1: {teta1}")
 		print()
 
+	plot_error_history(error_history)
 	return teta0, teta1
 
 

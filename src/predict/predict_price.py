@@ -1,5 +1,5 @@
-from src.predict.estimate_price import predict_price
-from src.train.file_utils import load_thetas
+from estimate_price import predict_price
+from file_utils import load_thetas
 
 
 def main():
