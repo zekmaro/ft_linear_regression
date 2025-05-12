@@ -13,6 +13,7 @@ def gradient_descent(
 		iterations: int = 5
 	) -> Tuple[float, float]:
 	"""Perform gradient descent to find the optimal parameters."""
+
 	print(input_feature)
 	print(dataset_output)
 	print()
@@ -38,6 +39,16 @@ def gradient_descent(
 	return teta0, teta1
 
 
+def normalize_data(raw_data: np.ndarray) -> np.ndarray:
+    """Normalize the data"""
+
+    mean = raw_data.mean()
+    std_dev = raw_data.std_dev()
+
+    normalized_data = (raw_data - mean) / std_dev
+    return normalized_data
+
+
 def apply_linear_regression(df: pd.DataFrame) -> Tuple[float, float]:
 	"""Apply linear regression to the given dataframe."""
 	
@@ -53,8 +64,16 @@ def apply_linear_regression(df: pd.DataFrame) -> Tuple[float, float]:
 	dataset_output = df["price"].values
 	input_feature = df["km"].values
 
-	
-	plot_regression_line(input_feature, dataset_output, 0.0, 0.0)
+    print("before normalization")
+    print(input_feature)
+    print(dataset_output)
+
+    normalized_dataset_output = normalize_data(dataset_output)
+    normalized_input_feature = normalize_data(input_feature)
+
+    print(normalized_input_feature)
+    print(normalized_dataset_output)
+	# plot_regression_line(input_feature, dataset_output, 0.0, 0.0)
 
 	teta0 = 0.0
 	teta1 = 0.0
