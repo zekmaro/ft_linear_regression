@@ -20,4 +20,3 @@ def plot_error_history(error_history: list) -> None:
 	plt.ylabel('Mean Squared Error')
 	plt.title('Error History')
 	plt.show()
-

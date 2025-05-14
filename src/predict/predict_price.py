@@ -1,5 +1,6 @@
 from estimate_price import predict_price
 from file_utils import load_thetas
+import sys
 
 
 def main():
@@ -24,4 +25,9 @@ def main():
     
 
 if __name__ == "__main__":
-    main()
+    """Entry point for the script"""
+    try:
+        main()
+    except Exception as e:
+        print(f"AssertionError: {e}")
+        sys.exit(1)

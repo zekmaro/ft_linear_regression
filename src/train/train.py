@@ -1,6 +1,7 @@
 from load_csv import load
 from file_utils import save_thetas
 from linear_regression import apply_linear_regression
+import sys
 
 
 def main():
@@ -12,4 +13,9 @@ def main():
 
 
 if __name__ == "__main__":
-	main()
+	"""Entry point for the script"""
+	try:
+		main()
+	except Exception as e:
+		print(f"AssertionError: {e}")
+		sys.exit(1)
