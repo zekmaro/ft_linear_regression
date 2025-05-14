@@ -4,12 +4,19 @@ import numpy as np
 from visualization import plot_regression_line, plot_error_history
 
 
+def get_mape(kms: np.ndarray, prices: np.ndarray, teta0: float, teta1: float) -> float:
+	predicted_prices = teta0 + teta1 * kms
+	error = prices - predicted_prices
+	mape = np.mean(np.abs(error / prices)) * 100
+	return mape
+
+
 def gradient_descent(
 		dataset_output: np.ndarray,
 		input_feature: np.ndarray, 
 		teta0: float,
 		teta1: float,
-		learning_rate: float = 0.01,
+		learning_rate: float = 0.1,
 		iterations: int = 1000,
 		epsilon: float = 1e-6
 	) -> Tuple[float, float]:
@@ -17,37 +24,22 @@ def gradient_descent(
 
 	prev_mse = float('inf')
 
-	print(input_feature)
-	print(dataset_output)
-	print()
-
 	error_history = []
 	for _ in range(iterations):
 		predictions = teta0 + teta1 * input_feature
-		print(f"Predictions: {predictions}")
-		print()
 
 		error = dataset_output - predictions
 		mse = np.mean(error ** 2)  # ← Mean Squared Error
 		error_history.append(mse)
-
 		if abs(prev_mse - mse) < epsilon:
 			break
 		prev_mse = mse
 
-		print(f"Error: {error}")
-		print()
-
 		d_teta0 = -2 * np.mean(error)
 		d_teta1 = -2 * np.mean(error * input_feature)
 
-		print(f"Gradient: d_teta0: {d_teta0}, d_teta1: {d_teta1}")
-		print()
-
 		teta0 -= learning_rate * d_teta0
 		teta1 -= learning_rate * d_teta1
-		print(f"teta0: {teta0}, teta1: {teta1}")
-		print()
 
 	plot_error_history(error_history)
 	return teta0, teta1
@@ -92,18 +84,8 @@ def apply_linear_regression(df: pd.DataFrame) -> Tuple[float, float]:
 	dataset_output = df["price"].values
 	input_feature = df["km"].values
 
-	print("before normalization")
-	print(input_feature)
-	print(dataset_output)
-
 	normalized_dataset_output = normalize_data(dataset_output)
 	normalized_input_feature = normalize_data(input_feature)
-
-	print("after normalization")
-
-	print(normalized_input_feature)
-	print(normalized_dataset_output)
-	print()
 
 	teta0_norm = 0.0
 	teta1_norm = 0.0
@@ -121,9 +103,8 @@ def apply_linear_regression(df: pd.DataFrame) -> Tuple[float, float]:
 	std_dev_in = input_feature.std()
 
 	teta0, teta1 = reverse_normalize_tetas(teta0_norm, teta1_norm, mean_in, std_dev_in, mean_out, std_dev_out)
-	print("after reverse normalization")
-	print(f"Final teta0: {teta0}, teta1: {teta1}")
+	mape = get_mape(input_feature, dataset_output, teta0, teta1)
 
 	plot_regression_line(input_feature, dataset_output, teta0, teta1)
 
-	return teta0, teta1
+	return teta0, teta1, mape
