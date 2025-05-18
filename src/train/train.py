@@ -6,7 +6,7 @@ import sys
 
 def main():
 	"""Main function to train the model"""
-	df = load("../data/data.csv")
+	df = load("data/data.csv")
 	teta0, teta1, mape = apply_linear_regression(df)
 	save_thetas(teta0, teta1)
 	print(f"Model trained with Mean Absolute Percentage Error: {mape:.2f}")
