@@ -5,7 +5,6 @@ from header import (
     ENTER_MILEAGE,
     MILEAGE_TYPE_ERROR,
     MILEAGE_VALUE_ERROR,
-    MILEAGE_RANGE_ERROR,
     FILE_NOT_FOUND,
     FILE_EMPTY
 )
@@ -23,9 +22,7 @@ def main() -> None:
     if mileage_input < 0:
         print(MILEAGE_VALUE_ERROR)
         return
-    if mileage_input > 400000:
-        print(MILEAGE_RANGE_ERROR)
-        return
+    mileage_input = int(mileage_input)
 
     try:
         teta0, teta1 = load_thetas()
@@ -36,7 +33,7 @@ def main() -> None:
         print(FILE_EMPTY)
         return
 
-    predicted_price = predict_price(float(mileage_input), teta0, teta1)
+    predicted_price = max(0, predict_price(float(mileage_input), teta0, teta1))
     print(f"The predicted price of the car is: {predicted_price:.2f}")
 
 

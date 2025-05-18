@@ -5,7 +5,7 @@ from linear_regression import apply_linear_regression
 import sys
 
 
-def main():
+def main() -> None:
     """Main function to train the model"""
     df = load(DATA_PATH)
     teta0, teta1, mape = apply_linear_regression(df)

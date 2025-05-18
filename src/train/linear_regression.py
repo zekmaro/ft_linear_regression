@@ -28,7 +28,7 @@ def get_mape(
     predicted_prices = teta0 + teta1 * kms
     error = prices - predicted_prices
     mape = np.mean(np.abs(error / prices)) * 100
-    return mape
+    return mape  # type: ignore
 
 
 def gradient_descent(
@@ -58,8 +58,8 @@ def gradient_descent(
         d_teta0 = -2 * np.mean(error)
         d_teta1 = -2 * np.mean(error * input_feature)
 
-        teta0 -= learning_rate * d_teta0
-        teta1 -= learning_rate * d_teta1
+        teta0 -= learning_rate * d_teta0  # type: ignore
+        teta1 -= learning_rate * d_teta1  # type: ignore
 
     plot_error_history(error_history)
     return teta0, teta1
@@ -90,7 +90,7 @@ def reverse_normalize_tetas(
     return teta0, teta1
 
 
-def apply_linear_regression(df: pd.DataFrame) -> Tuple[float, float]:
+def apply_linear_regression(df: pd.DataFrame) -> Tuple[float, float, float]:
     """Apply linear regression to the given dataframe."""
 
     if not isinstance(df, pd.DataFrame):
@@ -108,8 +108,8 @@ def apply_linear_regression(df: pd.DataFrame) -> Tuple[float, float]:
     dataset_output = df["price"].values
     input_feature = df["km"].values
 
-    normalized_dataset_output = normalize_data(dataset_output)
-    normalized_input_feature = normalize_data(input_feature)
+    normalized_dataset_output = normalize_data(dataset_output)  # type: ignore
+    normalized_input_feature = normalize_data(input_feature)  # type: ignore
 
     teta0_norm = INIT_TETA0
     teta1_norm = INIT_TETA1
@@ -121,10 +121,10 @@ def apply_linear_regression(df: pd.DataFrame) -> Tuple[float, float]:
         teta1_norm
     )
 
-    mean_out = dataset_output.mean()
-    std_dev_out = dataset_output.std()
-    mean_in = input_feature.mean()
-    std_dev_in = input_feature.std()
+    mean_out = dataset_output.mean()  # type: ignore
+    std_dev_out = dataset_output.std()  # type: ignore
+    mean_in = input_feature.mean()  # type: ignore
+    std_dev_in = input_feature.std()  # type: ignore
 
     teta0, teta1 = reverse_normalize_tetas(
         teta0_norm,
@@ -135,7 +135,17 @@ def apply_linear_regression(df: pd.DataFrame) -> Tuple[float, float]:
         std_dev_out
     )
 
-    mape = get_mape(input_feature, dataset_output, teta0, teta1)
-    plot_regression_line(input_feature, dataset_output, teta0, teta1)
+    mape = get_mape(
+        input_feature,  # type: ignore
+        dataset_output,  # type: ignore
+        teta0,
+        teta1
+    )
+    plot_regression_line(
+        input_feature,  # type: ignore
+        dataset_output,  # type: ignore
+        teta0,
+        teta1
+    )
 
     return teta0, teta1, mape
